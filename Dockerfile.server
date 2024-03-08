@@ -1,0 +1,37 @@
+FROM ruby:3.3.0-slim-bullseye
+
+RUN apt-get update -qq \
+    && apt-get install --no-install-recommends -y \
+      build-essential \
+      curl \
+      git \
+      libjemalloc2 \
+      locales \
+      openssh-server \
+      pkg-config \
+      sudo \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives
+
+RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+
+RUN groupadd -g 1000 user \
+    && useradd -m -s /bin/bash -u 1000 -g user -G sudo user \
+    && echo user:user1 | chpasswd \
+    && echo "user ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN mkdir /var/run/sshd
+RUN sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config
+
+ARG github_account
+RUN mkdir -p /home/user/.ssh \
+    && curl https://github.com/${github_account}.keys >> /home/user/.ssh/authorized_keys
+
+RUN mkdir -p /var/www \
+    && chmod 777 /var/www
+
+EXPOSE 22 3000
+
+ENV LANG en_US.utf8
+ENV TZ Asia/Tokyo
+
+CMD ["/usr/sbin/sshd", "-D"]

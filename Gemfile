@@ -22,3 +22,11 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+group :deploy, optional: true do
+  gem "base64", require: false
+  gem "bcrypt_pbkdf", require: false
+  gem "capistrano-rails", require: false
+  gem "capistrano", require: false
+  gem "ed25519", require: false
+end

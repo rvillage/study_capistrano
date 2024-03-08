@@ -1,0 +1,12 @@
+services:
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+      args:
+        github_account: rvillage
+    container_name: study_capistrano
+    ports:
+      - "10022:22"
+      - "3000:3000"
